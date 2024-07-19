@@ -18,7 +18,7 @@ const streamUrls = {
   tvperuhd:
     "https://cdnhd.iblups.com/hls/777b4d4cc0984575a7d14f6ee57dbcaf.m3u8",
   tvperunoticias:
-    "https://cdnhd.iblups.com/hls/777b4d4cc0984575a7d14f6ee57dbcaf.m3u8",
+    "https://cdnhd.iblups.com/hls/902c1a0395264f269f1160efa00660e4.m3u8",
   tvperuinternacional:
     "https://cdnhd.iblups.com/hls/ee2450c81e554f4cae0e6292106993c2.m3u8",
   tvperuespecial:
