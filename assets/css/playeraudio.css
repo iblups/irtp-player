@@ -1,0 +1,24 @@
+.audio .vjs-control-bar {
+  background-color: #cecece !important; /* Fondo negro con transparencia */
+  border-bottom-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
+  border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
+  display: flex !important; /* Asegura que la barra de controles siempre esté visible */
+  opacity: 1 !important; /* Mantén la barra de controles completamente visible */
+  transition: none !important; /* Deshabilita cualquier transición para asegurar visibilidad constante */
+  color: #e41237;
+}
+
+.audio:hover .vjs-control-bar {
+  opacity: 1 !important; /* Mostrar al pasar el mouse */
+}
+.audio .vjs-big-play-button {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0
+  ) !important; /* Fondo completamente transparente */
+  border: none !important; /* Eliminar el borde */
+  box-shadow: none !important; /* Eliminar cualquier sombra */
+  color: white !important; /* Color del icono */
+}

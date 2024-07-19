@@ -1,0 +1,27 @@
+.iblups .vjs-control-bar {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ) !important; /* Fondo negro con transparencia */
+  opacity: 0; /* Inicialmente oculta */
+  transition: opacity 0.5s ease; /* Transición suave para mostrar/ocultar */
+  border-bottom-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
+  border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
+}
+
+.iblups:hover .vjs-control-bar {
+  opacity: 1 !important; /* Mostrar al pasar el mouse */
+}
+.iblups .vjs-big-play-button {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0
+  ) !important; /* Fondo completamente transparente */
+  border: none !important; /* Eliminar el borde */
+  box-shadow: none !important; /* Eliminar cualquier sombra */
+  color: white !important; /* Color del icono */
+}
