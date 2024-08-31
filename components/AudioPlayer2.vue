@@ -1,5 +1,5 @@
 <template>
-  <div class="poster-container" @click="playVideo">
+  <div v-if="!isMobile" class="poster-container" @click="playVideo">
     <img
       v-show="showPosterImage"
       src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
@@ -9,6 +9,7 @@
   </div>
   <div class="video-container">
     <video
+      v-if="!isMobile"
       id="web-player"
       class="video-js vjs-fill audio"
       controls
@@ -18,6 +19,14 @@
       @play="showPoster"
       @pause="showPoster"
     ></video>
+    <div v-else class="mobile-player" @click="playMobileStream">
+      <img
+        src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
+        alt="Cover Image"
+        class="cover-image"
+      />
+      <button class="play-button">Play Audio</button>
+    </div>
   </div>
 </template>
 
@@ -35,8 +44,19 @@ const props = defineProps({
   },
 });
 
+const isMobile = ref(false);
 const showPosterImage = ref(true);
 let player;
+
+const detectMobileDevice = () => {
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  // Detecta si es un dispositivo móvil
+  return /android|iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+};
+
+const playMobileStream = () => {
+  window.open(props.streamUrl, "_blank");
+};
 
 const showPoster = () => {
   showPosterImage.value = true;
@@ -55,38 +75,41 @@ const playVideo = () => {
 
 onMounted(() => {
   isMobile.value = detectMobileDevice();
-  player = videojs("web-player", {
-    preload: "auto",
-    muted: true,
-    autoplay: true,
-    controlBar: {
-      fullscreenToggle: false,
-      volumePanel: {
-        inline: false,
-      },
-    },
-    fill: true,
-    liveui: false,
-    playbackRates: false,
-    html5: {
-      hls: {
-        limitRenditionByPlayerDimensions: true,
-        useDevicePixelRatio: true,
-      },
-    },
-    backgroundPlayback: true, // Esta línea habilita la reproducción en segundo plano
-  });
 
-  player.ready(() => {
-    player.src({
-      src: props.streamUrl,
-      type: "application/x-mpegURL",
+  if (!isMobile.value) {
+    player = videojs("web-player", {
+      preload: "auto",
+      muted: true,
+      autoplay: true,
+      controlBar: {
+        fullscreenToggle: false,
+        volumePanel: {
+          inline: false,
+        },
+      },
+      fill: true,
+      liveui: false,
+      playbackRates: false,
+      html5: {
+        hls: {
+          limitRenditionByPlayerDimensions: true,
+          useDevicePixelRatio: true,
+        },
+      },
+      backgroundPlayback: true, // Esta línea habilita la reproducción en segundo plano
     });
-    player.volume(0.6); // Establecer el volumen inicial al 60%
-  });
 
-  player.on("play", showPoster);
-  player.on("pause", showPoster);
+    player.ready(() => {
+      player.src({
+        src: props.streamUrl,
+        type: "application/x-mpegURL",
+      });
+      player.volume(0.6); // Establecer el volumen inicial al 60%
+    });
+
+    player.on("play", showPoster);
+    player.on("pause", showPoster);
+  }
 });
 </script>
 
