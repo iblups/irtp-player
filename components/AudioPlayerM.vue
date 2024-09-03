@@ -1,0 +1,103 @@
+<template>
+  <div class="poster-container" @click="playAudio">
+    <img
+      v-show="showPosterImage"
+      src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
+      alt="Cover Image"
+      class="poster-image"
+    />
+  </div>
+  <div class="audio-container">
+    <audio
+      id="web-player"
+      class="audio-player"
+      controls
+      playsinline
+      autoplay
+    ></audio>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import "video.js/dist/video-js.css"; // Esto se mantiene en caso de que sigas usando Video.js para otras partes del sitio
+
+const props = defineProps({
+  streamUrl: {
+    type: String,
+    default:
+      "https://cdnhd.iblups.com/hls/0773874174fd4eba8bb9eff741d190dc.m3u8",
+  },
+});
+
+const showPosterImage = ref(true);
+
+const hidePoster = () => {
+  showPosterImage.value = false;
+};
+
+const playAudio = () => {
+  const player = document.getElementById("web-player");
+  if (player) {
+    player.play();
+    hidePoster();
+  }
+};
+
+onMounted(() => {
+  const player = document.getElementById("web-player");
+
+  // Configuración del audio en segundo plano utilizando Media Session API
+  if (player && "mediaSession" in navigator) {
+    player.src = props.streamUrl;
+    player.volume = 0.6; // Establecer el volumen inicial al 60%
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "Stream Title",
+      artist: "Stream Artist",
+      album: "Stream Album",
+      artwork: [
+        {
+          src: "https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg",
+          sizes: "512x512",
+          type: "image/jpeg",
+        },
+      ],
+    });
+
+    navigator.mediaSession.setActionHandler("play", () => player.play());
+    navigator.mediaSession.setActionHandler("pause", () => player.pause());
+    navigator.mediaSession.setActionHandler("stop", () => player.pause());
+  }
+
+  // Asegurarse de que el audio comience automáticamente
+  player.play().catch((error) => {
+    console.log("Autoplay failed: ", error);
+  });
+});
+</script>
+
+<style scoped>
+.poster-container {
+  width: 100%;
+  max-width: 780px;
+  cursor: pointer;
+}
+
+.poster-image {
+  width: 100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.audio-container {
+  width: 100%;
+  max-width: 780px;
+  height: 45px;
+}
+
+.audio-player {
+  width: 100%;
+  height: 100%;
+}
+</style>
