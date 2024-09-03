@@ -1,11 +1,11 @@
 .audio .vjs-control-bar {
-  background-color: #cecece !important; /* Fondo negro con transparencia */
+  /*background-color: #cecece !important; /* Fondo negro con transparencia */
   border-bottom-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
   border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
   display: flex !important; /* Asegura que la barra de controles siempre esté visible */
   opacity: 1 !important; /* Mantén la barra de controles completamente visible */
   transition: none !important; /* Deshabilita cualquier transición para asegurar visibilidad constante */
-  color: #e41237;
+  /*color: #e41237;*/
 }
 
 .audio:hover .vjs-control-bar {

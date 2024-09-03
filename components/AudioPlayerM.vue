@@ -10,7 +10,7 @@
   <div class="audio-container">
     <audio
       id="web-player"
-      class="audio-player"
+      class="video-js vjs-fill audio"
       controls
       playsinline
       autoplay
@@ -20,6 +20,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import videojs from "video.js";
 import "video.js/dist/video-js.css"; // Esto se mantiene en caso de que sigas usando Video.js para otras partes del sitio
 
 const props = defineProps({
@@ -88,16 +89,5 @@ onMounted(() => {
   width: 100%;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
-}
-
-.audio-container {
-  width: 100%;
-  max-width: 780px;
-  height: 45px;
-}
-
-.audio-player {
-  width: 100%;
-  height: 100%;
 }
 </style>

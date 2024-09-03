@@ -140,33 +140,8 @@ onMounted(() => {
   border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
 }
 
-.audio video {
-  width: 100%;
-  height: 100%; /* Ajusta la altura del video al 100% del contenedor de video */
-}
-
-.mobile-player {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 780px;
-}
-
 .cover-image {
   width: 100%;
   max-width: 780px;
-}
-
-.play-button {
-  position: absolute;
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
 }
 </style>
