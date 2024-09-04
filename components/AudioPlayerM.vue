@@ -1,5 +1,5 @@
 <template>
-  <div class="poster-container" @click="playAudio">
+  <div class="poster-container">
     <img
       v-show="showPosterImage"
       src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
