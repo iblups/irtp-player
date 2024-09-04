@@ -133,6 +133,8 @@ onMounted(() => {
   height: auto; /* Mantener la proporción de la imagen */
   border-top-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
   border-top-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
+  border-bottom-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
+  border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
 }
 
 .video-container {
