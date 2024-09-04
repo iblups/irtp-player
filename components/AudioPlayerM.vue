@@ -91,4 +91,12 @@ onMounted(() => {
   border-radius: 1rem;
   width: 100%;
 }
+.audio-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: auto;
+  border-radius: 0 0 0.75rem 0.75rem;
+  overflow: hidden;
+}
 </style>
