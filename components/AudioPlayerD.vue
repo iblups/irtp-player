@@ -115,21 +115,34 @@ onMounted(() => {
 
 <style scoped>
 .poster-container {
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  flex-direction: column; /* Asegurar que los elementos estén uno debajo del otro */
   width: 100%;
   max-width: 780px;
-  cursor: pointer;
+  height: 350px; /* Establecer la altura total */
+  background-color: #f0f0f0; /* Fondo opcional para resaltar el área */
+  border-radius: 10px; /* Opcional: añadir bordes redondeados */
+  margin: 0 auto; /* Asegura que esté centrado horizontalmente en la página */
 }
 
 .poster-image {
   width: 100%;
+  max-width: 100%; /* Asegurar que la imagen no se pase del contenedor */
+  height: auto; /* Mantener la proporción de la imagen */
   border-top-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
   border-top-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
 }
 
 .video-container {
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
   width: 100%;
   max-width: 780px;
   height: 45px; /* Ajusta la altura del contenedor de video a 10px */
+
+  margin: 0 auto; /* Centrar el contenedor en la página */
 }
 
 /* Estilos personalizados */
