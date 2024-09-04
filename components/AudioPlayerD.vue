@@ -137,6 +137,7 @@ onMounted(() => {
 
 .video-container {
   height: 100%;
+  max-height: 439px;
   margin: 0 auto;
   max-width: 780px;
   width: 100%;
