@@ -80,14 +80,15 @@ onMounted(() => {
 
 <style scoped>
 .poster-container {
+  position: absolute;
+  bottom: 0;
   width: 100%;
-  max-width: 780px;
-  cursor: pointer;
+  border-radius: 0 0 0.75rem 0.75rem;
+  overflow: hidden;
 }
 
 .poster-image {
+  border-radius: 1rem;
   width: 100%;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
 }
 </style>
