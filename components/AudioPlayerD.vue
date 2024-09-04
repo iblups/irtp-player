@@ -121,7 +121,7 @@ onMounted(() => {
   flex-direction: column; /* Asegurar que los elementos estén uno debajo del otro */
   width: 100%;
   max-width: 780px;
-  height: 350px; /* Establecer la altura total */
+  height: 395px; /* Establecer la altura total */
   background-color: #f0f0f0; /* Fondo opcional para resaltar el área */
   border-radius: 10px; /* Opcional: añadir bordes redondeados */
   margin: 0 auto; /* Asegura que esté centrado horizontalmente en la página */
