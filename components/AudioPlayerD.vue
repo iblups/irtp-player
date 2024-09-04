@@ -97,6 +97,7 @@ onMounted(() => {
         },
       },
       backgroundPlayback: true, // Esta línea habilita la reproducción en segundo plano
+      loadingSpinner: false, // Desactivar el preloader
     });
 
     player.ready(() => {
@@ -115,36 +116,34 @@ onMounted(() => {
 
 <style scoped>
 .poster-container {
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 1rem;
   display: flex;
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  flex-direction: column; /* Asegurar que los elementos estén uno debajo del otro */
-  width: 100%;
+  flex-direction: column;
+  height: auto;
+  justify-content: center;
+  margin: 0 auto;
   max-width: 780px;
-  height: 395px; /* Establecer la altura total */
-  background-color: #f0f0f0; /* Fondo opcional para resaltar el área */
-  border-radius: 10px; /* Opcional: añadir bordes redondeados */
-  margin: 0 auto; /* Asegura que esté centrado horizontalmente en la página */
+  width: 100%;
 }
 
 .poster-image {
+  border-radius: 1rem;
+  height: auto;
+  max-width: 100%;
   width: 100%;
-  max-width: 100%; /* Asegurar que la imagen no se pase del contenedor */
-  height: auto; /* Mantener la proporción de la imagen */
-  border-top-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
-  border-top-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
-  border-bottom-left-radius: 15px; /* Radio del borde en la esquina inferior izquierda */
-  border-bottom-right-radius: 15px; /* Radio del borde en la esquina inferior derecha */
 }
 
 .video-container {
-  display: flex;
-  justify-content: center; /* Centrar horizontalmente */
-  width: 100%;
+  height: 100%;
+  margin: 0 auto;
   max-width: 780px;
-  height: 45px; /* Ajusta la altura del contenedor de video a 10px */
-
-  margin: 0 auto; /* Centrar el contenedor en la página */
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Estilos personalizados */
@@ -158,5 +157,14 @@ onMounted(() => {
 .cover-image {
   width: 100%;
   max-width: 780px;
+}
+.video-js {
+  background-color: transparent;
+}
+.video-js .vjs-tech {
+  left: 0;
+  position: absolute;
+  top: 0;
+  opacity: 0;
 }
 </style>
