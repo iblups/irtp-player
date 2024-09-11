@@ -64,8 +64,8 @@ onMounted(() => {
     enabled: (enabled) => !enabled,
   });
   qualityLevels.addQualityLevel({
-    id: 360,
-    width: 360,
+    id: 480,
+    width: 480,
     src: props.streamUrl,
     enabled: (enabled) => !enabled,
   });
