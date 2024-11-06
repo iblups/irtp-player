@@ -1,8 +1,7 @@
 <template>
   <div class="min-h-screen bg-black flex items-center justify-center">
     <!-- Reproductor de Video -->
-    <VideoPlayer v-if="streamUrl" :streamUrl="streamUrl" />
-    <p v-else class="text-white">Cargando video...</p>
+    <VideoPlayer :streamUrl="streamUrl" />
   </div>
 </template>
 
@@ -18,17 +17,22 @@ onMounted(async () => {
   const videoId = route.params.id;
 
   try {
-    // Llamar al API para obtener el playbackId
+    // Llamar a la API para obtener detalles del video
     const response = await $fetch(`/api/video/${videoId}`);
 
-    if (response.status === "success" && response.playbackId) {
-      // Construir la URL de transmisión HLS usando el playbackId
-      streamUrl.value = `https://stream.mux.com/${response.playbackId}.m3u8`;
+    if (
+      response.data &&
+      response.data.playback_ids &&
+      response.data.playback_ids.length > 0
+    ) {
+      // Obtener el playbackId del video para construir la URL de transmisión
+      const playbackId = response.data.playback_ids[0].id;
+      streamUrl.value = `https://stream.mux.com/${playbackId}.m3u8`;
     } else {
-      console.error("Error: No se pudo obtener el playbackId.");
+      console.error("Error: No se encontró el playbackId para este video.");
     }
   } catch (error) {
-    console.error("Error al cargar el video:", error);
+    console.error("Error al obtener detalles del video:", error);
   }
 });
 </script>
