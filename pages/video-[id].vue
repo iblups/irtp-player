@@ -1,14 +1,14 @@
 <template>
   <div class="min-h-screen bg-black flex items-center justify-center">
     <!-- Reproductor de Video -->
-    <VideoPlayer :streamUrl="streamUrl" />
+    <VideoPlayerVideo :streamUrl="streamUrl" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import VideoPlayer from "@/components/VideoPlayer.vue";
+import VideoPlayerVideo from "@/components/VideoPlayerVideo.vue";
 
 const streamUrl = ref("");
 const route = useRoute();
