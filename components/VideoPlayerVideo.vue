@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch, onBeforeUnmount } from "vue";
+import { onMounted, watch } from "vue";
 import videojs from "video.js";
 import "@mycujoo/videojs-hls-quality-selector";
 import "video.js/dist/video-js.css";
@@ -28,41 +28,64 @@ const props = defineProps({
 let player;
 
 onMounted(() => {
-  // Inicializar el reproductor de video
   player = videojs("player", {
-    controls: true,
+    preload: "auto",
     autoplay: true,
     muted: true,
+    controlBar: {
+      fullscreenToggle: true,
+      volumePanel: {
+        inline: false,
+      },
+    },
     fluid: true,
+    liveui: false,
+    playbackRates: false,
+    html5: {
+      hls: {
+        limitRenditionByPlayerDimensions: true,
+        useDevicePixelRatio: true,
+      },
+    },
+    bigPlayButton: false, // Desactiva el botón de reproducción grande al centro
   });
 
-  // Agregar el selector de calidad HLS
   player.hlsQualitySelector({
     displayCurrentQuality: true,
   });
 
-  // Configurar la fuente del video
-  player.src({
-    src: props.streamUrl,
-    type: "application/x-mpegURL", // o intenta con "application/vnd.apple.mpegurl"
-  });
+  // Mostrar el spinner de carga hasta que el video esté listo
+  player.addClass("vjs-waiting");
 
-  // Reactivar la fuente si `streamUrl` cambia
   watch(
     () => props.streamUrl,
     (newUrl) => {
-      player.src({
-        src: newUrl,
-        type: "application/x-mpegURL", // o "application/vnd.apple.mpegurl"
-      });
-    }
-  );
-});
+      if (newUrl) {
+        player.src({
+          src: newUrl,
+          type: "application/vnd.apple.mpegurl",
+        });
 
-onBeforeUnmount(() => {
-  if (player) {
-    player.dispose();
-  }
+        player.ready(() => {
+          player.on("playing", () => {
+            player.removeClass("vjs-waiting");
+          });
+
+          // Manejar la reproducción automática
+          player.play().catch((error) => {
+            console.error("Error en la reproducción automática:", error);
+          });
+        });
+      }
+    },
+    { immediate: true }
+  );
+
+  player.on("play", () => {
+    if (player.hlsQualitySelector) {
+      player.hlsQualitySelector.setQuality(1080);
+    }
+  });
 });
 </script>
 
@@ -71,10 +94,27 @@ onBeforeUnmount(() => {
   width: 100%;
 }
 
+.player {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 780px;
+}
+
+/* Estilos personalizados */
 .iblups {
   font-size: 15px;
   font-family: "Poppins", sans-serif;
   border-radius: 15px;
+}
+
+/* Configura el spinner de carga de Video.js */
+.vjs-waiting .vjs-loading-spinner {
+  display: block !important;
+}
+
+/* Ocultar completamente el botón de reproducción grande al centro */
+.vjs-big-play-button {
+  display: none !important;
 }
 
 .iblups video {
