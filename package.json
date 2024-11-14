@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mux/mux-node": "^8.8.0",
+    "@mux/videojs-kit": "^0.12.0",
     "@mycujoo/videojs-hls-quality-selector": "^1.1.5-rc.4",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
