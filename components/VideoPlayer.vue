@@ -16,17 +16,24 @@ import { onMounted, watch } from "vue";
 import videojs from "video.js";
 import "@mycujoo/videojs-hls-quality-selector";
 import "video.js/dist/video-js.css";
-import "@/assets/css/playervideo.css"; // Asegúrate de importar tu CSS personalizado
+import "@/assets/css/playervideo.css";
+import "videojs-mux"; // Asegura la importación de Mux
 
 const props = defineProps({
   streamUrl: {
     type: String,
     required: true,
   },
+  videoId: {
+    type: String,
+    required: true,
+  },
 });
 
+let player;
+
 onMounted(() => {
-  const player = videojs("player", {
+  player = videojs("player", {
     preload: "auto",
     autoplay: true,
     muted: true,
@@ -37,12 +44,23 @@ onMounted(() => {
       },
     },
     fluid: true,
-    liveui: false,
-    playbackRates: false,
     html5: {
       hls: {
         limitRenditionByPlayerDimensions: true,
         useDevicePixelRatio: true,
+      },
+    },
+    plugins: {
+      mux: {
+        debug: false,
+        data: {
+          env_key: "arce6netr7dj69b43pqvfq44k", // Clave de entorno de Mux
+          player_name: "iblups_player_tvperu2024",
+          player_version: "1.0.1",
+          video_id: props.videoId,
+          video_stream_type: "live",
+          video_title: props.videoId,
+        },
       },
     },
   });
@@ -106,8 +124,8 @@ onMounted(() => {
 
 /* Estilos personalizados */
 .iblups {
-  font-size: 15px; /* Aumentar el tamaño de la fuente */
-  font-family: "Poppins", sans-serif; /* Cambiar el tipo de letra */
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
   border-radius: 15px;
 }
 
