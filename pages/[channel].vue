@@ -1,6 +1,6 @@
 <template>
   <div v-if="streamUrl">
-    <VideoPlayer :streamUrl="streamUrl" :videoId="channel" />
+    <VideoPlayer :streamUrl="streamUrl" />
   </div>
   <div v-else>
     <p>El canal solicitado no existe.</p>
@@ -27,13 +27,10 @@ const streamUrls = {
     "https://cdnhd.iblups.com/hls/3f2cb1658d114f2693eff18d83199e67.m3u8",
 };
 
-// Obtén la URL del stream según el canal
 const streamUrl = streamUrls[channel] || "";
-
 function enableCustomLayout() {
   setPageLayout("custom");
 }
-
 definePageMeta({
   layout: false,
 });

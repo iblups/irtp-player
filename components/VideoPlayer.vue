@@ -23,11 +23,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  videoId: {
-    // Nueva propiedad para el ID del video en Mux
-    type: String,
-    required: true,
-  },
 });
 
 onMounted(() => {
@@ -48,17 +43,6 @@ onMounted(() => {
       hls: {
         limitRenditionByPlayerDimensions: true,
         useDevicePixelRatio: true,
-      },
-    },
-    plugins: {
-      mux: {
-        debug: true,
-        data: {
-          env_key: "arce6netr7dj69b43pqvfq44k", // Reemplaza con tu clave de entorno de Mux
-          video_id: props.videoId, // Usa el videoId proporcionado como video_id de Mux
-          video_title: "Título del Video",
-          player_name: "Video.js Player",
-        },
       },
     },
   });
