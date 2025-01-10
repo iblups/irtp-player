@@ -1,27 +1,25 @@
 <template>
-  <div class="poster-container">
+  <div class="audio-container">
     <img
       v-show="showPosterImage"
       src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
       alt="Cover Image"
       class="poster-image"
     />
-  </div>
-  <div class="audio-container">
     <audio
       id="web-player"
       class="video-js vjs-fill audio"
       controls
       playsinline
-      autoplay
+      preload="auto"
+      muted
     ></audio>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import videojs from "video.js";
-import "video.js/dist/video-js.css"; // Esto se mantiene en caso de que sigas usando Video.js para otras partes del sitio
+import Hls from "hls.js";
 
 const props = defineProps({
   streamUrl: {
@@ -33,64 +31,76 @@ const props = defineProps({
 
 const showPosterImage = ref(true);
 
-const hidePoster = () => {
-  showPosterImage.value = false;
-};
-
-const playAudio = () => {
-  const player = document.getElementById("web-player");
-  if (player) {
-    player.play();
-    hidePoster();
-  }
-};
-
 onMounted(() => {
   const player = document.getElementById("web-player");
 
-  // Configuración del audio en segundo plano utilizando Media Session API
-  if (player && "mediaSession" in navigator) {
-    player.src = props.streamUrl;
-    player.volume = 0.6; // Establecer el volumen inicial al 60%
+  if (player) {
+    // Integración de HLS.js para mayor compatibilidad
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(props.streamUrl);
+      hls.attachMedia(player);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        player.play().catch((error) => {
+          console.log("Autoplay failed:", error);
+        });
+      });
+    } else if (player.canPlayType("application/vnd.apple.mpegurl")) {
+      // Soporte nativo para HLS
+      player.src = props.streamUrl;
+      player.play().catch((error) => {
+        console.log("Error reproduciendo HLS:", error);
+      });
+    }
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: "Stream Title",
-      artist: "Stream Artist",
-      album: "Stream Album",
-      artwork: [
-        {
-          src: "https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg",
-          sizes: "512x512",
-          type: "image/jpeg",
-        },
-      ],
+    player.volume = 0.6; // Volumen inicial
+
+    // Configuración de Media Session API
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Radio Nacional",
+        artist: "En vivo",
+        artwork: [
+          {
+            src: "https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg",
+            sizes: "512x512",
+            type: "image/jpeg",
+          },
+        ],
+      });
+
+      navigator.mediaSession.setActionHandler("play", () => player.play());
+      navigator.mediaSession.setActionHandler("pause", () => player.pause());
+      navigator.mediaSession.setActionHandler("seekbackward", () => {
+        player.currentTime = Math.max(player.currentTime - 10, 0);
+      });
+      navigator.mediaSession.setActionHandler("seekforward", () => {
+        player.currentTime = Math.min(player.currentTime + 10, player.duration);
+      });
+
+      // Informar al sistema que se está reproduciendo
+      navigator.mediaSession.playbackState = "playing";
+    }
+
+    // Manejar cambios de visibilidad para Android
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && player.paused) {
+        player.play().catch((error) => {
+          console.log("Error al intentar reanudar el audio:", error);
+        });
+      }
     });
 
-    navigator.mediaSession.setActionHandler("play", () => player.play());
-    navigator.mediaSession.setActionHandler("pause", () => player.pause());
-    navigator.mediaSession.setActionHandler("stop", () => player.pause());
+    // Intentar reproducir automáticamente
+    player.play().catch((error) => {
+      console.log("Autoplay failed:", error);
+      showPosterImage.value = false; // Oculta la imagen después de la interacción del usuario
+    });
   }
-
-  // Asegurarse de que el audio comience automáticamente
-  player.play().catch((error) => {
-    console.log("Autoplay failed: ", error);
-  });
 });
 </script>
 
 <style scoped>
-.poster-container {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  border-radius: 0 0 0.75rem 0.75rem;
-  overflow: hidden;
-}
-
-.poster-image {
-  border-radius: 1rem;
-  width: 100%;
-}
 .audio-container {
   position: absolute;
   bottom: 0;
@@ -98,5 +108,10 @@ onMounted(() => {
   height: auto;
   border-radius: 0 0 0.75rem 0.75rem;
   overflow: hidden;
+}
+
+.poster-image {
+  width: 100%;
+  border-radius: 0.75rem;
 }
 </style>
