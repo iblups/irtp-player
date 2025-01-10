@@ -1,27 +1,38 @@
 <template>
-  <!-- Renderiza el componente adecuado basado en si es móvil o escritorio -->
+  <!-- Renderiza el componente adecuado basado en el tipo de dispositivo -->
   <component :is="componentToShow" />
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import AudioPlayerMobile from "~/components/AudioPlayerM.vue"; // El componente para móviles
+import AudioPlayerM1 from "~/components/AudioPlayerM1.vue"; // El componente para móviles iPhone
+import AudioPlayerM2 from "~/components/AudioPlayerM2.vue"; // El componente para móviles Android
 import AudioPlayerDesktop from "~/components/AudioPlayerD.vue"; // El componente para escritorio
 
-const isMobile = ref(false);
 const componentToShow = ref(null);
 
-// Función mejorada para detectar dispositivos móviles
-const detectMobileDevice = () => {
+// Función para detectar tipo de dispositivo
+const detectDeviceType = () => {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  return /android|iPhone|iPad|iPod/i.test(userAgent);
+
+  if (/iPhone|iPad|iPod/i.test(userAgent)) {
+    return "iPhone";
+  } else if (/android/i.test(userAgent)) {
+    return "Android";
+  } else {
+    return "Desktop";
+  }
 };
 
 // Detectar dispositivo al montar el componente
 onMounted(() => {
-  isMobile.value = detectMobileDevice();
-  componentToShow.value = isMobile.value
-    ? AudioPlayerMobile
-    : AudioPlayerDesktop;
+  const deviceType = detectDeviceType();
+  if (deviceType === "iPhone") {
+    componentToShow.value = AudioPlayerM1;
+  } else if (deviceType === "Android") {
+    componentToShow.value = AudioPlayerM2;
+  } else {
+    componentToShow.value = AudioPlayerDesktop;
+  }
 });
 </script>

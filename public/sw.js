@@ -1,23 +1,11 @@
 self.addEventListener("install", (event) => {
-  console.log("Service Worker instalado.");
-  self.skipWaiting();
+  console.log("[ServiceWorker] Installed");
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("Service Worker activado.");
+  console.log("[ServiceWorker] Activated");
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.url.includes("m3u8")) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          return response;
-        })
-        .catch((error) => {
-          console.error("Error en fetch:", error);
-          throw error;
-        })
-    );
-  }
+  console.log("[ServiceWorker] Fetch intercepted for:", event.request.url);
 });

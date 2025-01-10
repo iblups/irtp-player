@@ -16,6 +16,7 @@
     "@mycujoo/videojs-hls-quality-selector": "^1.1.5-rc.4",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
+    "hls.js": "^1.5.18",
     "nuxt": "^3.12.4",
     "vue": "latest"
   },
