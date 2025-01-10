@@ -3,17 +3,15 @@
     <audio
       ref="audio"
       :src="audioSrc"
-      @play="updateMediaSession"
-      @pause="updateMediaSession"
+      @play="handlePlay"
+      @pause="handlePause"
     ></audio>
     <div class="controls">
       <button @click="togglePlayPause">
         {{ isPlaying ? "Pause" : "Play" }}
       </button>
     </div>
-    <div v-if="swMessage" class="sw-message">
-      {{ swMessage }}
-    </div>
+    <div v-if="message" class="message">{{ message }}</div>
   </div>
 </template>
 
@@ -21,13 +19,14 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const audioSrc =
-  "https://cdnhd.iblups.com/hls/0773874174fd4eba8bb9eff741d190dc.m3u8";
+  "https://cdnhd.iblups.com/hls/0773874174fd4eba8bb9eff741d190dc.m3u8"; // URL del stream en vivo
 const audio = ref(null);
 const isPlaying = ref(false);
-const swMessage = ref("");
+const message = ref("");
 
 const togglePlayPause = () => {
   if (!audio.value) return;
+
   if (isPlaying.value) {
     audio.value.pause();
   } else {
@@ -36,14 +35,22 @@ const togglePlayPause = () => {
   isPlaying.value = !isPlaying.value;
 };
 
-const updateMediaSession = () => {
+const handlePlay = () => {
+  setupMediaSession();
+  isPlaying.value = true;
+};
+
+const handlePause = () => {
+  isPlaying.value = false;
+};
+
+const setupMediaSession = () => {
   if ("mediaSession" in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: "Live Audio Stream",
-      artist: "Your Stream",
-      album: "Live Stream",
+      title: "RPP En Vivo",
+      artist: "RPP Noticias",
       artwork: [
-        { src: "/path-to-image.jpg", sizes: "512x512", type: "image/png" },
+        { src: "/path/to/artwork.jpg", sizes: "512x512", type: "image/jpeg" },
       ],
     });
 
@@ -56,21 +63,6 @@ const updateMediaSession = () => {
       audio.value.pause();
       isPlaying.value = false;
     });
-
-    navigator.mediaSession.setActionHandler("stop", () => {
-      audio.value.pause();
-      audio.value.currentTime = 0;
-      isPlaying.value = false;
-    });
-  }
-};
-
-const keepAudioAlive = () => {
-  if (audio.value) {
-    audio.value.loop = true; // Mantener el audio en reproducción continua si es necesario
-    audio.value.play().catch((error) => {
-      console.error("Error while trying to play audio:", error);
-    });
   }
 };
 
@@ -79,24 +71,19 @@ onMounted(() => {
     navigator.serviceWorker
       .register("/sw.js")
       .then(() => {
-        swMessage.value = "Service Worker registered successfully!";
+        message.value = "Service Worker registered successfully!";
       })
       .catch((error) => {
-        swMessage.value = `Service Worker registration failed: ${error.message}`;
+        message.value = `Service Worker registration failed: ${error.message}`;
       });
   } else {
-    swMessage.value = "Service Worker not supported in this browser.";
-  }
-
-  if (audio.value) {
-    keepAudioAlive();
+    message.value = "Service Worker not supported in this browser.";
   }
 });
 
 onBeforeUnmount(() => {
   if (audio.value) {
     audio.value.pause();
-    audio.value.currentTime = 0;
   }
 });
 </script>
@@ -107,7 +94,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 20px;
 }
 
 .controls button {
@@ -125,7 +112,7 @@ onBeforeUnmount(() => {
   background-color: #0056b3;
 }
 
-.sw-message {
+.message {
   margin-top: 10px;
   font-size: 14px;
   color: green;
