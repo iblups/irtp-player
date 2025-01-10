@@ -7,7 +7,7 @@
 import { ref, onMounted } from "vue";
 import AudioPlayerM1 from "~/components/AudioPlayerM1.vue"; // El componente para móviles iPhone
 import AudioPlayerM2 from "~/components/AudioPlayerM2.vue"; // El componente para móviles Android
-import AudioPlayerDesktop from "~/components/AudioPlayerD.vue"; // El componente para escritorio
+import AudioPlayerDesktop from "~/components/AudioPlayerM2.vue"; // El componente para escritorio
 
 const componentToShow = ref(null);
 

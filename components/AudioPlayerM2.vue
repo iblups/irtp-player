@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const audioSrc =
   "https://cdnhd.iblups.com/hls/0773874174fd4eba8bb9eff741d190dc.m3u8";
@@ -56,6 +56,21 @@ const updateMediaSession = () => {
       audio.value.pause();
       isPlaying.value = false;
     });
+
+    navigator.mediaSession.setActionHandler("stop", () => {
+      audio.value.pause();
+      audio.value.currentTime = 0;
+      isPlaying.value = false;
+    });
+  }
+};
+
+const keepAudioAlive = () => {
+  if (audio.value) {
+    audio.value.loop = true; // Mantener el audio en reproducción continua si es necesario
+    audio.value.play().catch((error) => {
+      console.error("Error while trying to play audio:", error);
+    });
   }
 };
 
@@ -71,6 +86,17 @@ onMounted(() => {
       });
   } else {
     swMessage.value = "Service Worker not supported in this browser.";
+  }
+
+  if (audio.value) {
+    keepAudioAlive();
+  }
+});
+
+onBeforeUnmount(() => {
+  if (audio.value) {
+    audio.value.pause();
+    audio.value.currentTime = 0;
   }
 });
 </script>
