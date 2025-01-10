@@ -12,23 +12,20 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Evento fetch para interceptar solicitudes de red
+// Interceptar solicitudes de red relacionadas con audio HLS
 self.addEventListener("fetch", (event) => {
   if (event.request.url.includes(".m3u8")) {
-    console.log("[ServiceWorker] Handling HLS request:", event.request.url);
+    console.log("[ServiceWorker] HLS request intercepted:", event.request.url);
+    event.respondWith(fetch(event.request));
   }
 });
 
-// Manejo de mensajes desde el cliente
+// Mantener el Service Worker activo
 self.addEventListener("message", (event) => {
-  console.log("[ServiceWorker] Message received:", event.data);
-
   if (event.data === "keep-alive") {
-    // Mantener la conexión activa
-    self.clients.matchAll().then((clients) => {
-      clients.forEach((client) =>
-        client.postMessage("Stream is active and managed by the Service Worker")
-      );
-    });
+    console.log("[ServiceWorker] Keeping connection alive.");
+    setTimeout(() => {
+      event.source.postMessage("Still active");
+    }, 10000);
   }
 });
