@@ -11,7 +11,6 @@
       class="video-js vjs-fill audio"
       controls
       playsinline
-      preload="auto"
       muted
     ></audio>
   </div>
