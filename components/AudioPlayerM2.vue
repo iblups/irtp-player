@@ -1,6 +1,5 @@
 <template>
   <div class="poster-container">
-    <!-- Imagen del poster -->
     <img
       src="https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg"
       alt="Cover Image"
@@ -8,12 +7,9 @@
     />
   </div>
   <div class="audio-container">
-    <!-- Barra de controles -->
     <div class="controls-bar">
-      <!-- Botón Play/Pause minimalista -->
       <button @click="togglePlayPause" class="play-pause-btn">
         <template v-if="isPlaying">
-          <!-- Ícono de pausa sólido -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -24,7 +20,6 @@
           </svg>
         </template>
         <template v-else>
-          <!-- Ícono de play sólido -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -47,18 +42,145 @@ const audioSrc =
   "https://cdnhd.iblups.com/hls/0773874174fd4eba8bb9eff741d190dc.m3u8";
 const player = ref(null);
 const isPlaying = ref(false);
+const status = ref("Idle");
+const logs = ref([]);
+const reconnectAttempts = ref(0);
+const currentTime = ref(0);
+const buffer = ref(0);
+const maxReconnectAttempts = 5;
+let inactivityTimer = null;
 
-const togglePlayPause = () => {
+const log = (message) => {
+  logs.value.unshift(`[${new Date().toLocaleTimeString()}] ${message}`);
+  if (logs.value.length > 10) logs.value.pop();
+};
+
+const togglePlayPause = async () => {
   if (!player.value) return;
 
   const mediaElement = player.value.getMediaElement();
-  if (isPlaying.value) {
-    mediaElement.pause();
-  } else {
-    mediaElement.play();
+
+  try {
+    if (isPlaying.value) {
+      mediaElement.pause();
+      status.value = "Paused";
+    } else {
+      await mediaElement.play();
+      status.value = "Playing";
+      startInactivityChecker(mediaElement);
+    }
+    isPlaying.value = !mediaElement.paused;
+  } catch (error) {
+    status.value = "Error";
+    log(`Error al reproducir: ${error.message}`);
   }
-  isPlaying.value = !isPlaying.value;
 };
+
+const reconnectStream = async () => {
+  if (reconnectAttempts.value >= maxReconnectAttempts) {
+    log("Número máximo de intentos de reconexión alcanzado.");
+    status.value = "Error";
+    return;
+  }
+
+  try {
+    reconnectAttempts.value++;
+    status.value = "Reconnecting";
+    log(
+      `Intentando reconectar al stream (Intento ${reconnectAttempts.value})...`
+    );
+
+    await player.value.load(audioSrc);
+
+    // Forzar reproducción desde el último segmento en vivo
+    const seekRange = player.value.seekRange();
+    const liveEdge = seekRange.end; // Último segmento menos 0.5 segundos para estabilizar
+    player.value.getMediaElement().currentTime = liveEdge;
+    log(`Posicionando en el borde en vivo: ${liveEdge.toFixed(2)}s`);
+
+    await player.value.getMediaElement().play();
+    isPlaying.value = true;
+    status.value = "Playing";
+    reconnectAttempts.value = 0;
+    log("Reconexión exitosa y reproducción en vivo estabilizada.");
+  } catch (error) {
+    log(`Error al reconectar al stream: ${error.message}`);
+    setTimeout(reconnectStream, 3000); // Reintentar después de 3 segundos
+  }
+};
+
+const startInactivityChecker = (mediaElement) => {
+  clearInterval(inactivityTimer);
+  inactivityTimer = setInterval(() => {
+    currentTime.value = mediaElement.currentTime;
+    const bufferedInfo = player.value.getBufferedInfo();
+    buffer.value = bufferedInfo?.audio?.length
+      ? bufferedInfo.audio[0].end - currentTime.value
+      : 0;
+
+    if (buffer.value > 2) {
+      log(`Buffer suficiente: ${buffer.value.toFixed(2)}s.`);
+      return; // No reconectar si el buffer es suficiente
+    }
+
+    if (mediaElement.currentTime === currentTime.value && isPlaying.value) {
+      log("Detección de inactividad: el tiempo de reproducción no avanza.");
+      reconnectStream();
+    }
+  }, 3000); // Comprobar cada 3 segundos
+};
+
+onMounted(() => {
+  const mediaElement = document.createElement("audio");
+  document.body.appendChild(mediaElement);
+
+  player.value = new shaka.Player(mediaElement);
+
+  // Configuración de Shaka Player
+  player.value.configure({
+    streaming: {
+      retryParameters: {
+        maxAttempts: 3, // Reducir intentos para acelerar la detección
+        baseDelay: 100, // Reducir el retraso inicial
+        backoffFactor: 1.2, // Incremento leve entre intentos
+        fuzzFactor: 0.1, // Variación aleatoria mínima
+      },
+      bufferingGoal: 6, // Buffer reducido para baja latencia
+      rebufferingGoal: 2, // Reanudar con 2 segundos de datos
+      lowLatencyMode: true, // Activar modo de baja latencia
+    },
+  });
+
+  mediaElement.addEventListener("play", () => {
+    isPlaying.value = true;
+    status.value = "Playing";
+    log("Reproducción en curso.");
+    startInactivityChecker(mediaElement);
+  });
+
+  mediaElement.addEventListener("pause", () => {
+    isPlaying.value = false;
+    status.value = "Paused";
+    log("Reproducción pausada.");
+  });
+
+  mediaElement.addEventListener("ended", () => {
+    isPlaying.value = false;
+    status.value = "Idle";
+    log("Reproducción finalizada.");
+  });
+
+  player.value
+    .load(audioSrc)
+    .then(() => {
+      log("Audio cargado correctamente.");
+      setupMediaSession(); // Configurar la metadata
+    })
+    .catch((error) => {
+      log(`Error al cargar el audio: ${error.message}`);
+      status.value = "Error";
+    });
+});
 
 const setupMediaSession = () => {
   if ("mediaSession" in navigator) {
@@ -75,65 +197,28 @@ const setupMediaSession = () => {
       ],
     });
 
-    navigator.mediaSession.setActionHandler("play", () => {
-      player.value.getMediaElement().play();
+    navigator.mediaSession.setActionHandler("play", async () => {
+      const mediaElement = player.value.getMediaElement();
+      await mediaElement.play();
       isPlaying.value = true;
+      log("Media Session: Reproducción iniciada desde controles externos.");
     });
 
     navigator.mediaSession.setActionHandler("pause", () => {
-      player.value.getMediaElement().pause();
+      const mediaElement = player.value.getMediaElement();
+      mediaElement.pause();
       isPlaying.value = false;
+      log("Media Session: Reproducción pausada desde controles externos.");
     });
   }
 };
-
-onMounted(() => {
-  const mediaElement = document.createElement("audio");
-  document.body.appendChild(mediaElement);
-
-  player.value = new shaka.Player(mediaElement);
-
-  // Configuración de Shaka Player con reintentos y buffering
-  player.value.configure({
-    streaming: {
-      retryParameters: {
-        maxAttempts: Infinity, // Reintenta indefinidamente
-        baseDelay: 1000, // 1 segundo de retraso inicial
-        backoffFactor: 2, // Incremento exponencial del retraso
-        fuzzFactor: 0.5, // Variación aleatoria en los reintentos
-      },
-      bufferingGoal: 60, // Buffer de 60 segundos
-      rebufferingGoal: 15, // Rebuffer de 15 segundos
-      lowLatencyMode: true, // Habilita modo de baja latencia
-    },
-  });
-
-  // Escuchar eventos de error y buffering
-  player.value.addEventListener("error", (event) => {
-    console.error("Shaka Player Error:", event.detail);
-  });
-
-  player.value.addEventListener("buffering", (event) => {
-    console.log("Buffering:", event.buffering);
-  });
-
-  // Cargar el stream HLS
-  player.value
-    .load(audioSrc)
-    .then(() => {
-      console.log("Audio cargado correctamente.");
-      setupMediaSession(); // Configurar la metadata
-    })
-    .catch((error) => {
-      console.error("Error al cargar el audio:", error);
-    });
-});
 
 onBeforeUnmount(() => {
   if (player.value) {
     player.value.destroy();
     player.value = null;
   }
+  clearInterval(inactivityTimer);
 });
 </script>
 
