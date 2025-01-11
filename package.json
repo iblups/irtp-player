@@ -19,6 +19,7 @@
     "@vite-pwa/nuxt": "^0.10.6",
     "hls.js": "^1.5.18",
     "nuxt": "^3.12.4",
+    "shaka-player": "^4.12.7",
     "vue": "latest"
   },
   "devDependencies": {

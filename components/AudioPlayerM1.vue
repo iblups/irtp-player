@@ -54,9 +54,9 @@ onMounted(() => {
     player.volume = 0.6; // Establecer el volumen inicial al 60%
 
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: "Stream Title",
-      artist: "Stream Artist",
-      album: "Stream Album",
+      title: "Radio Nacional",
+      artist: "En vivo",
+      album: "Radio Nacional",
       artwork: [
         {
           src: "https://iblups.sfo3.cdn.digitaloceanspaces.com/media/cover-radio2.jpeg",

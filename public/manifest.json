@@ -1,8 +1,0 @@
-{
-  "name": "Radio en Vivo",
-  "short_name": "Radio",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff"
-}
