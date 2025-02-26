@@ -124,7 +124,7 @@ onMounted(() => {
   height: auto;
   justify-content: center;
   margin: 0 auto;
-  max-width: 780px;
+  max-width: 800px;
   width: 100%;
 }
 
