@@ -139,7 +139,7 @@ onMounted(() => {
   height: 100%;
   max-height: 439px;
   margin: 0 auto;
-  max-width: 780px;
+  max-width: 800px;
   width: 100%;
   position: absolute;
   top: 0;
@@ -157,7 +157,7 @@ onMounted(() => {
 
 .cover-image {
   width: 100%;
-  max-width: 780px;
+  max-width: 800px;
 }
 .video-js {
   background-color: transparent;
