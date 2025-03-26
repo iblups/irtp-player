@@ -99,11 +99,11 @@ import { ref } from "vue";
 
 // Lista base de nombres de ODPE
 const odpeNames = [
+  "777b4d4cc0984575a7d14f6ee57dbcaf",
+  "902c1a0395264f269f1160efa00660e4",
+  "ee2450c81e554f4cae0e6292106993c2",
+  "3f2cb1658d114f2693eff18d83199e67",
   "ABANCAY",
-  "ALTO AMAZONAS",
-  "ANDAHUAYLAS",
-  "ANGARAES",
-  "AREQUIPA",
   "ATALAYA",
   "AZANGARO",
   "BAGUA",
