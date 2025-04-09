@@ -51,7 +51,7 @@ onMounted(() => {
   });
 
   player.hlsQualitySelector({
-    displayCurrentQuality: true,
+    displayCurrentQuality: false,
   });
 
   // Mostrar el spinner de carga hasta que el video esté listo

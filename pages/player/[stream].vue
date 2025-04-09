@@ -1,6 +1,6 @@
 <template>
   <div v-if="streamUrl">
-    <VideoPlayer :streamUrl="streamUrl" :videoId="stream" />
+    <VideoPlayerVideo :streamUrl="streamUrl" :videoId="stream" />
   </div>
   <div v-else>
     <p>El canal solicitado no existe o el stream es inválido.</p>
@@ -9,7 +9,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import VideoPlayer from "@/components/VideoPlayer.vue";
+import VideoPlayerVideo from "@/components/VideoPlayerVideo.vue";
 
 const route = useRoute();
 const stream = route.params.stream;
