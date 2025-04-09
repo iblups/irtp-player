@@ -15,9 +15,7 @@ const route = useRoute();
 const stream = route.params.stream;
 
 // Armamos la URL del stream con base fija + parámetro dinámico
-const streamUrl = stream
-  ? `https://irtp-decoder.iblups.com/hls/${stream}.m3u8`
-  : "";
+const streamUrl = stream ? `${stream}` : "";
 
 definePageMeta({
   layout: false,
